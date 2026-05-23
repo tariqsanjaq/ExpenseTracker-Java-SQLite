@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="app_background">#FAFAFA</color>
+    <color name="surface_card">#FFFFFF</color>
+    <color name="text_dark">#212121</color>
+    <color name="text_muted">#757575</color>
+    <color name="accent_blue">#3F51B5</color>
+    <color name="error_red">#D32F2F</color>
+</resources>
