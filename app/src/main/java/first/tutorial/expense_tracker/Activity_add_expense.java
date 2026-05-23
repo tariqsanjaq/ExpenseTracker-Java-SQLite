@@ -33,7 +33,7 @@ public class Activity_add_expense extends AppCompatActivity {
     }
 
     public void saveTransactionRecord(View v) {
-        Toast.makeText(this, "Saved successfully!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Saved successfully!", Toast.LENGTH_LONG).show();
         finish();
     }
 }
