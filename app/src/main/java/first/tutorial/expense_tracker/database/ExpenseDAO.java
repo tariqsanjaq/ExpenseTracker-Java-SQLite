@@ -39,7 +39,7 @@ public class ExpenseDAO {
         Cursor cursor = database.query(DatabaseHelper.TABLE_EXPENSES,
                 null, null, null, null, null, DatabaseHelper.COLUMN_ID + " DESC");
 
-        if (cursor != null && cursor.moveToFirst()) {
+        if (cursor.moveToFirst()) {
             do {
                 Expense expense = new Expense();
                 expense.setId(cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID)));

@@ -2,76 +2,97 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAFA"
+    android:background="#F3F4F6"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:padding="24dp"
+    android:gravity="center">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="40dp"
-        android:text="Account Access"
-        android:textColor="#212121"
-        android:textSize="24sp"
-        android:textStyle="bold" />
-
-    <RadioGroup
-        android:id="@+id/authToggleGroup"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:orientation="horizontal">
+        android:background="#FFFFFF"
+        android:elevation="4dp"
+        android:orientation="vertical"
+        android:padding="32dp">
 
-        <RadioButton
-            android:id="@+id/radioLogin"
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:checked="true"
-            android:text="Sign In" />
+            android:layout_gravity="center_horizontal"
+            android:text="Account Access"
+            android:textColor="#1F2937"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="32dp"/>
 
-        <RadioButton
-            android:id="@+id/radioRegister"
-            android:layout_width="0dp"
+        <RadioGroup
+            android:id="@+id/authToggleGroup"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="New Account" />
-    </RadioGroup>
+            android:layout_marginBottom="24dp"
+            android:orientation="horizontal">
 
-    <EditText
-        android:id="@+id/etEmail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:hint="Email Address"
-        android:inputType="textEmailAddress"
-        android:padding="10dp" />
+            <RadioButton
+                android:id="@+id/radioLogin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checked="true"
+                android:textColor="#4B5563"
+                android:textSize="16sp"
+                android:text="Sign In" />
 
-    <EditText
-        android:id="@+id/etPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:hint="Password"
-        android:inputType="textPassword"
-        android:padding="10dp" />
+            <RadioButton
+                android:id="@+id/radioRegister"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#4B5563"
+                android:textSize="16sp"
+                android:text="New Account" />
+        </RadioGroup>
 
-    <TextView
-        android:id="@+id/tvAuthError"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Invalid inputs. Please verify credentials."
-        android:textColor="#D32F2F"
-        android:textSize="14sp"
-        android:visibility="gone" />
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:background="#F9FAFB"
+            android:hint="Email Address"
+            android:inputType="textEmailAddress"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp"
+            android:textColorHint="#9CA3AF"/>
 
-    <Button
-        android:id="@+id/btnAuthSubmit"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="24dp"
-        android:onClick="handleAuthentication"
-        android:text="Continue" />
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:background="#F9FAFB"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:padding="16dp"
+            android:layout_marginBottom="8dp"
+            android:textColorHint="#9CA3AF"/>
+
+        <TextView
+            android:id="@+id/tvAuthError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="Invalid inputs. Please verify credentials."
+            android:textColor="#EF4444"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnAuthSubmit"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:backgroundTint="#3F51B5"
+            android:onClick="handleAuthenticationClick"
+            android:text="Continue"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 </LinearLayout>
