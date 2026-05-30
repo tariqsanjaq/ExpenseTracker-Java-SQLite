@@ -1,9 +1,17 @@
 package first.tutorial.expense_tracker;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
@@ -16,6 +24,9 @@ public class Activity_history extends AppCompatActivity {
 
     private ListView lvCompleteLedger;
     private ExpenseDAO expenseDAO;
+    private ArrayAdapter<String> adapter;
+    private List<String> displayList;
+    private List<Expense> allExpenses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,21 +36,55 @@ public class Activity_history extends AppCompatActivity {
         expenseDAO = new ExpenseDAO(this);
         expenseDAO.open();
 
-        // Make sure this ID matches your activity_history.xml file!
         lvCompleteLedger = findViewById(R.id.lvCompleteLedger);
+        EditText etSearchHistory = findViewById(R.id.etSearchHistory);
 
+        // Load all data into the list initially
         loadHistoryData();
+
+        //  1. REAL-TIME SEARCH LOGIC
+        if (etSearchHistory != null) {
+            etSearchHistory.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    // This automatically filters the list as you type!
+                    if (adapter != null) {
+                        adapter.getFilter().filter(s);
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {}
+            });
+        }
+
+        //  2. FOOLPROOF FIX FOR BUTTONS (Overriding the XML onClick)
+        Button btnContactSupport = findViewById(R.id.btnContactSupport);
+        Button btnShareReport = findViewById(R.id.btnShareReport);
+        Button btnFilterDateRange = findViewById(R.id.btnFilterDateRange);
+
+        if (btnContactSupport != null) {
+            btnContactSupport.setOnClickListener(v -> contactSupport(v));
+        }
+
+        if (btnShareReport != null) {
+            btnShareReport.setOnClickListener(v -> shareFinancialReport(v));
+        }
+
+        if (btnFilterDateRange != null) {
+            btnFilterDateRange.setOnClickListener(v -> selectFilterDateRange(v));
+        }
     }
 
     private void loadHistoryData() {
-        // 🌟 1. GET THE LOGGED-IN USER'S ID FROM MEMORY
         SharedPreferences prefs = getSharedPreferences("ExpenseTrackerPrefs", MODE_PRIVATE);
         int currentUserId = prefs.getInt("userId", -1);
 
-        // 🌟 2. USE THE NEW METHOD TO FETCH ONLY THEIR EXPENSES
-        List<Expense> allExpenses = expenseDAO.getUserExpenses(currentUserId);
-
-        List<String> displayList = new ArrayList<>();
+        allExpenses = expenseDAO.getUserExpenses(currentUserId);
+        displayList = new ArrayList<>();
 
         for (Expense exp : allExpenses) {
             String record = exp.getDate() + " | " + exp.getTitle() + "\n"
@@ -48,13 +93,62 @@ public class Activity_history extends AppCompatActivity {
         }
 
         if (lvCompleteLedger != null) {
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                    this,
-                    android.R.layout.simple_list_item_1,
-                    displayList
-            );
+            adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,displayList);
             lvCompleteLedger.setAdapter(adapter);
         }
+    }
+
+    // 3. SUPPORT LOGIC (Opens Email App)
+    public void contactSupport(View view) {
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+        emailIntent.setData(Uri.parse("mailto:support@myexpensetracker.com"));
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Need Help with Expense Tracker");
+        startActivity(Intent.createChooser(emailIntent, "Send Support Email"));
+    }
+
+    // 🌟 4. SHARE LOGIC (Opens Share Menu)
+    public void shareFinancialReport(View view) {
+        // 1. Get the current user
+        SharedPreferences prefs = getSharedPreferences("ExpenseTrackerPrefs", MODE_PRIVATE);
+        int currentUserId = prefs.getInt("userId", -1);
+        String userName = prefs.getString("userName", "Employee");
+
+        // 2. Fetch all their expenses
+        List<Expense> allExpenses = expenseDAO.getUserExpenses(currentUserId);
+
+        if (allExpenses.isEmpty()) {
+            Toast.makeText(this, "No expenses to share yet!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // 3. Build a beautiful text report
+        double totalSpent = 0.0;
+        StringBuilder report = new StringBuilder();
+
+        report.append("📊 OFFICIAL EXPENSE REPORT\n");
+        report.append("Generated by: ").append(userName).append("\n");
+        report.append("----------------------------------\n");
+
+        for (Expense exp : allExpenses) {
+            report.append("• ").append(exp.getDate()).append(" | ").append(exp.getTitle()).append("\n");
+            report.append("  Category: ").append(exp.getCategory()).append(" | Amount: $").append(exp.getAmount()).append("\n");
+            totalSpent += exp.getAmount();
+        }
+
+        report.append("----------------------------------\n");
+        report.append("💰 TOTAL SUBMITTED: $").append(String.format("%.2f", totalSpent)).append("\n");
+
+        // 4. Send the report
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Expense Report - " + userName);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, report.toString());
+        startActivity(Intent.createChooser(shareIntent, "Send Report To..."));
+    }
+
+    // 5. FILTER LOGIC
+    public void selectFilterDateRange(View view) {
+        Toast.makeText(this, "Date filter feature coming soon!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
