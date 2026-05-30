@@ -9,50 +9,60 @@ import java.util.List;
 
 public class ExpenseDAO {
     private SQLiteDatabase database;
-    private final DatabaseHelper dbHelper;
+    private DatabaseHelper dbHelper;
 
     public ExpenseDAO(Context context) {
         dbHelper = new DatabaseHelper(context);
     }
 
-    public void open() {
-        database = dbHelper.getWritableDatabase();
-    }
+    public void open() { database = dbHelper.getWritableDatabase(); }
+    public void close() { if (dbHelper != null) dbHelper.close(); }
 
-    public void close() {
-        dbHelper.close();
-    }
-
-    public long insertExpense(Expense expense) {
+    // 🌟 SAVE EXPENSE WITH USER ID
+    public long insertExpense(Expense expense, int currentUserId) {
         ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.COLUMN_TITLE, expense.getTitle());
-        values.put(DatabaseHelper.COLUMN_AMOUNT, expense.getAmount());
-        values.put(DatabaseHelper.COLUMN_CATEGORY, expense.getCategory());
-        values.put(DatabaseHelper.COLUMN_DATE, expense.getDate());
-        values.put(DatabaseHelper.COLUMN_IS_RECURRING, expense.getIsRecurring());
-
-        return database.insert(DatabaseHelper.TABLE_EXPENSES, null, values);
+        values.put("user_id", currentUserId);
+        values.put("title", expense.getTitle());
+        values.put("amount", expense.getAmount());
+        values.put("category", expense.getCategory());
+        values.put("date", expense.getDate());
+        values.put("is_recurring", expense.getIsRecurring());
+        return database.insert("expenses", null, values);
     }
 
-    public List<Expense> getAllExpenses() {
+    // 🌟 ONLY FETCH THIS USER'S EXPENSES
+    public List<Expense> getUserExpenses(int currentUserId) {
         List<Expense> expensesList = new ArrayList<>();
-        Cursor cursor = database.query(DatabaseHelper.TABLE_EXPENSES,
-                null, null, null, null, null, DatabaseHelper.COLUMN_ID + " DESC");
+        Cursor cursor = database.query("expenses", null, "user_id = ?", new String[]{String.valueOf(currentUserId)}, null, null, "date DESC");
 
-        if (cursor.moveToFirst()) {
+        if (cursor != null && cursor.moveToFirst()) {
             do {
-                Expense expense = new Expense();
-                expense.setId(cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID)));
-                expense.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TITLE)));
-                expense.setAmount(cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_AMOUNT)));
-                expense.setCategory(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_CATEGORY)));
-                expense.setDate(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DATE)));
-                expense.setIsRecurring(cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_IS_RECURRING)));
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                String title = cursor.getString(cursor.getColumnIndexOrThrow("title"));
+                double amount = cursor.getDouble(cursor.getColumnIndexOrThrow("amount"));
+                String category = cursor.getString(cursor.getColumnIndexOrThrow("category"));
+                String date = cursor.getString(cursor.getColumnIndexOrThrow("date"));
+                int isRecurring = cursor.getInt(cursor.getColumnIndexOrThrow("is_recurring"));
 
+                Expense expense = new Expense(id, title, amount, category, date, isRecurring);
                 expensesList.add(expense);
             } while (cursor.moveToNext());
-            cursor.close();
         }
+        if (cursor != null) cursor.close();
         return expensesList;
+    }
+
+    public void deleteExpense(int id) {
+        database.delete("expenses", "id = ?", new String[]{String.valueOf(id)});
+    }
+
+    public void updateExpense(Expense expense) {
+        ContentValues values = new ContentValues();
+        values.put("title", expense.getTitle());
+        values.put("amount", expense.getAmount());
+        values.put("category", expense.getCategory());
+        values.put("date", expense.getDate());
+        values.put("is_recurring", expense.getIsRecurring());
+        database.update("expenses", values, "id = ?", new String[]{String.valueOf(expense.getId())});
     }
 }

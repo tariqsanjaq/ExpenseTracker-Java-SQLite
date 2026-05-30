@@ -3,130 +3,136 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="#F3F4F6"> <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="20dp">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add New Expense"
-        android:textColor="#1F2937"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="24dp" />
+    android:background="#F3F4F6">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="#FFFFFF"
-        android:padding="20dp"
-        android:elevation="4dp"> <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Transaction Details"
-        android:textColor="#4B5563"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp"/>
-
-        <EditText
-            android:id="@+id/etAmount"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:background="#F9FAFB"
-            android:hint="Amount (e.g. $50.00)"
-            android:inputType="numberDecimal"
-            android:padding="16dp"
-            android:layout_marginBottom="12dp"
-            android:textSize="18sp"
-            android:textColorHint="#9CA3AF"/>
-
-        <EditText
-            android:id="@+id/etDescription"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:background="#F9FAFB"
-            android:hint="Description (e.g. Lunch)"
-            android:inputType="textCapSentences"
-            android:padding="16dp"
-            android:layout_marginBottom="16dp"
-            android:textColorHint="#9CA3AF"/>
+        android:padding="20dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Select Category"
-            android:textColor="#6B7280"
-            android:textSize="12sp" />
-
-        <Spinner
-            android:id="@+id/spinnerCategory"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            android:background="#F9FAFB"/>
-
-        <AutoCompleteTextView
-            android:id="@+id/actvTags"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:background="#F9FAFB"
-            android:hint="Tags (e.g. #food, #travel)"
-            android:padding="16dp"
-            android:layout_marginBottom="16dp"
-            android:textColorHint="#9CA3AF"/>
-
-        <CheckBox
-            android:id="@+id/cbIsRecurring"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="This is a recurring monthly payment"
-            android:textColor="#4B5563"
-            android:layout_marginBottom="8dp" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="#FFFFFF"
-        android:padding="16dp"
-        android:layout_marginTop="20dp"
-        android:elevation="4dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Transaction Date"
-            android:textColor="#4B5563"
+            android:text="Add New Expense"
+            android:textColor="#1F2937"
+            android:textSize="28sp"
             android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="24dp" />
 
-        <DatePicker
-            android:id="@+id/datePickerTransaction"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:datePickerMode="spinner"
-            android:calendarViewShown="false" />
+            android:orientation="vertical"
+            android:background="#FFFFFF"
+            android:padding="20dp"
+            android:elevation="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Transaction Details"
+                android:textColor="#4B5563"
+                android:textStyle="bold"
+                android:layout_marginBottom="16dp"/>
+
+            <EditText
+                android:id="@+id/etAmount"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:background="#F9FAFB"
+                android:hint="Amount (e.g. $50.00)"
+                android:inputType="numberDecimal"
+                android:padding="16dp"
+                android:layout_marginBottom="12dp"
+                android:textSize="18sp"
+                android:textColorHint="#9CA3AF"/>
+
+            <EditText
+                android:id="@+id/etDescription"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:background="#F9FAFB"
+                android:hint="Description (e.g. Lunch)"
+                android:inputType="textCapSentences"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp"
+                android:textColorHint="#9CA3AF"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Category"
+                android:textColor="#6B7280"
+                android:textSize="12sp" />
+
+            <Spinner
+                android:id="@+id/spinnerCategory"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:background="#F9FAFB"/>
+
+            <AutoCompleteTextView
+                android:id="@+id/actvTags"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:background="#F9FAFB"
+                android:hint="Tags (e.g. #food, #travel)"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp"
+                android:textColorHint="#9CA3AF"/>
+
+            <CheckBox
+                android:id="@+id/cbIsRecurring"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="This is a recurring monthly payment"
+                android:textColor="#4B5563"
+                android:layout_marginBottom="8dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#FFFFFF"
+            android:padding="16dp"
+            android:layout_marginTop="20dp"
+            android:elevation="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Transaction Date"
+                android:textColor="#4B5563"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+            <Button
+                android:id="@+id/btnSelectDate"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:backgroundTint="#F9FAFB"
+                android:textColor="#1F2937"
+                android:onClick="showDatePickerDialog"
+                android:text="Loading today's date..." />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnSaveTransaction"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="32dp"
+            android:backgroundTint="#3F51B5"
+            android:onClick="saveTransactionRecord"
+            android:text="Save Expense"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
     </LinearLayout>
-
-    <Button
-        android:id="@+id/btnSaveTransaction"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginBottom="32dp"
-        android:backgroundTint="#3F51B5"
-        android:onClick="saveTransactionRecord"
-        android:text="Save Expense"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:textStyle="bold" />
-
-</LinearLayout>
 </ScrollView>

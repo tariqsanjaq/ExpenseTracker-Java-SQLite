@@ -15,6 +15,7 @@
         android:orientation="vertical"
         android:padding="32dp">
 
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -51,6 +52,18 @@
                 android:textSize="16sp"
                 android:text="New Account" />
         </RadioGroup>
+
+        <EditText
+            android:id="@+id/etName"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:background="#F9FAFB"
+            android:hint="Full Name"
+            android:inputType="textPersonName"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone"
+            android:textColorHint="#9CA3AF"/>
 
         <EditText
             android:id="@+id/etEmail"

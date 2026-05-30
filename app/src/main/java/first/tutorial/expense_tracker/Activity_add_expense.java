@@ -1,15 +1,19 @@
 package first.tutorial.expense_tracker;
 
+import android.app.DatePickerDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-
+import java.util.Calendar;
 import first.tutorial.expense_tracker.database.Expense;
 import first.tutorial.expense_tracker.database.ExpenseDAO;
 
@@ -18,69 +22,108 @@ public class Activity_add_expense extends AppCompatActivity {
     private EditText etAmount, etDescription;
     private Spinner spinnerCategory;
     private CheckBox cbIsRecurring;
-    private DatePicker datePickerTransaction;
+    private Button btnSelectDate, btnSaveTransaction;
     private ExpenseDAO expenseDAO;
+
+    private String selectedTransactionDate = "";
+    private ArrayAdapter<String> adapter;
+
+    private boolean isEditMode = false;
+    private int editExpenseId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_expense);
 
-        // 1. Open database connection
         expenseDAO = new ExpenseDAO(this);
         expenseDAO.open();
 
-        // 2. Link UI Components EXACTLY to Student 1's IDs
         etAmount = findViewById(R.id.etAmount);
         etDescription = findViewById(R.id.etDescription);
         spinnerCategory = findViewById(R.id.spinnerCategory);
         cbIsRecurring = findViewById(R.id.cbIsRecurring);
-        datePickerTransaction = findViewById(R.id.datePickerTransaction);
+        btnSelectDate = findViewById(R.id.btnSelectDate);
+        btnSaveTransaction = findViewById(R.id.btnSaveTransaction);
 
-        // Note: We don't need to link the Button here because of android:onClick in XML!
+        String[] categories = {"Food", "Transport", "Utilities", "Entertainment", "Housing", "Other"};
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, categories);
+        spinnerCategory.setAdapter(adapter);
+
+        setDefaultDateToToday();
+        checkIfModifying();
     }
 
-    // 3. This method is triggered directly by the XML button
+    private void checkIfModifying() {
+        Intent intent = getIntent();
+        if (intent.hasExtra("EXTRA_ID")) {
+            isEditMode = true;
+            editExpenseId = intent.getIntExtra("EXTRA_ID", -1);
+
+            etDescription.setText(intent.getStringExtra("EXTRA_TITLE"));
+            etAmount.setText(String.valueOf(intent.getDoubleExtra("EXTRA_AMOUNT", 0.0)));
+            selectedTransactionDate = intent.getStringExtra("EXTRA_DATE");
+            btnSelectDate.setText("Selected Date: " + selectedTransactionDate);
+            cbIsRecurring.setChecked(intent.getIntExtra("EXTRA_IS_RECURRING", 0) == 1);
+
+            String category = intent.getStringExtra("EXTRA_CATEGORY");
+            if (category != null) {
+                int spinnerPosition = adapter.getPosition(category);
+                spinnerCategory.setSelection(spinnerPosition);
+            }
+
+            btnSaveTransaction.setText("Update Expense");
+        }
+    }
+
+    private void setDefaultDateToToday() {
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        selectedTransactionDate = year + "-" + String.format("%02d", month + 1) + "-" + String.format("%02d", day);
+        btnSelectDate.setText("Selected Date: " + selectedTransactionDate);
+    }
+
+    public void showDatePickerDialog(View view) {
+        Calendar cal = Calendar.getInstance();
+        DatePickerDialog dialog = new DatePickerDialog(this, (view1, year, month, dayOfMonth) -> {
+            selectedTransactionDate = year + "-" + String.format("%02d", month + 1) + "-" + String.format("%02d", dayOfMonth);
+            btnSelectDate.setText("Selected Date: " + selectedTransactionDate);
+        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+        dialog.show();
+    }
+
     public void saveTransactionRecord(View view) {
         String amountStr = etAmount.getText().toString().trim();
         String description = etDescription.getText().toString().trim();
-
-        // Safe check for spinner
         String category = "Other";
         if (spinnerCategory != null && spinnerCategory.getSelectedItem() != null) {
             category = spinnerCategory.getSelectedItem().toString();
         }
-
-        // Convert checkbox to SQLite integer
         int isRecurring = (cbIsRecurring != null && cbIsRecurring.isChecked()) ? 1 : 0;
 
-        // 4. Extract Date from the Spinner DatePicker
-        String date = "";
-        if (datePickerTransaction != null) {
-            int day = datePickerTransaction.getDayOfMonth();
-            int month = datePickerTransaction.getMonth() + 1; // Add 1 because January is 0 in Java
-            int year = datePickerTransaction.getYear();
-            date = year + "-" + String.format("%02d", month) + "-" + String.format("%02d", day);
-        }
-
-        // 5. Input Validation
         if (TextUtils.isEmpty(amountStr) || TextUtils.isEmpty(description)) {
             Toast.makeText(this, "Please enter an amount and description", Toast.LENGTH_SHORT).show();
             return;
         }
-
         double amount = Double.parseDouble(amountStr);
 
-        // 6. Save to Database
-        Expense newExpense = new Expense(description, amount, category, date, isRecurring);
-        long result = expenseDAO.insertExpense(newExpense);
+        // 🌟 GET USER ID FROM MEMORY
+        SharedPreferences prefs = getSharedPreferences("ExpenseTrackerPrefs", MODE_PRIVATE);
+        int currentUserId = prefs.getInt("userId", -1);
 
-        if (result != -1) {
-            Toast.makeText(this, "Expense Saved Successfully!", Toast.LENGTH_SHORT).show();
-            finish(); // Close screen, return to Dashboard automatically
+        if (isEditMode) {
+            Expense updatedExpense = new Expense(editExpenseId, description, amount, category, selectedTransactionDate, isRecurring);
+            expenseDAO.updateExpense(updatedExpense);
+            Toast.makeText(this, "Expense Updated Successfully!", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, "Database Error", Toast.LENGTH_SHORT).show();
+            Expense newExpense = new Expense(description, amount, category, selectedTransactionDate, isRecurring);
+            // 🌟 PASS USER ID WHEN SAVING
+            expenseDAO.insertExpense(newExpense, currentUserId);
+            Toast.makeText(this, "Expense Saved Successfully!", Toast.LENGTH_SHORT).show();
         }
+        finish();
     }
 
     @Override

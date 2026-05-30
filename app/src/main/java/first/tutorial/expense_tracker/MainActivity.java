@@ -10,39 +10,48 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import first.tutorial.expense_tracker.database.DatabaseHelper;
 
 public class MainActivity extends AppCompatActivity {
 
     private RadioGroup authToggleGroup;
-    private EditText etEmail, etPassword;
+    private EditText etName, etEmail, etPassword;
     private TextView tvAuthError;
     private SharedPreferences sharedPreferences;
+    private DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        dbHelper = new DatabaseHelper(this);
         sharedPreferences = getSharedPreferences("ExpenseTrackerPrefs", MODE_PRIVATE);
 
-        // Auto-login if session is saved
         if (sharedPreferences.getBoolean("isLoggedIn", false)) {
             navigateToDashboard();
             return;
         }
 
-        // Link UI Components matching the XML exactly
         authToggleGroup = findViewById(R.id.authToggleGroup);
+        etName = findViewById(R.id.etName);
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         tvAuthError = findViewById(R.id.tvAuthError);
+
+        // Hide/Show name box
+        authToggleGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.radioRegister) {
+                etName.setVisibility(View.VISIBLE);
+            } else {
+                etName.setVisibility(View.GONE);
+            }
+        });
     }
 
-    // Triggered by the Continue button (android:onClick="handleAuthenticationClick")
     public void handleAuthenticationClick(View view) {
-        // Always hide the error text when the user tries again
         tvAuthError.setVisibility(View.GONE);
-
+        String name = etName.getText().toString().trim();
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
@@ -54,30 +63,40 @@ public class MainActivity extends AppCompatActivity {
         int selectedId = authToggleGroup.getCheckedRadioButtonId();
 
         if (selectedId == R.id.radioLogin) {
-            // Mock Login Logic
-            if (email.equals("user@student.com") && password.equals("123456")) {
-                saveLoginSession();
+            int loggedInUserId = dbHelper.authenticateUser(email, password);
+            if (loggedInUserId != -1) {
+                String userName = dbHelper.getUserName(loggedInUserId);
+                saveLoginSession(loggedInUserId, userName);
                 navigateToDashboard();
             } else {
-                showError("Invalid credentials. Use user@student.com / 123456");
+                showError("Invalid email or password.");
             }
         } else if (selectedId == R.id.radioRegister) {
-            // Mock Registration Logic
-            Toast.makeText(this, "Account created! Please log in.", Toast.LENGTH_SHORT).show();
-            authToggleGroup.check(R.id.radioLogin);
-            etPassword.setText(""); // Clear password field for safety
+            if (TextUtils.isEmpty(name)) {
+                showError("Please enter your name");
+                return;
+            }
+            if (dbHelper.insertUser(name, email, password)) {
+                Toast.makeText(this, "Account created! You can now sign in.", Toast.LENGTH_SHORT).show();
+                authToggleGroup.check(R.id.radioLogin);
+                etPassword.setText("");
+                etName.setText("");
+            } else {
+                showError("This email is already registered!");
+            }
         }
     }
 
-    // Helper method to display the red error text dynamically
     private void showError(String message) {
         tvAuthError.setText(message);
         tvAuthError.setVisibility(View.VISIBLE);
     }
 
-    private void saveLoginSession() {
+    private void saveLoginSession(int userId, String userName) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("isLoggedIn", true);
+        editor.putInt("userId", userId);
+        editor.putString("userName", userName);
         editor.apply();
     }
 

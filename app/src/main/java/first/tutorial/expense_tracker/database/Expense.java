@@ -2,14 +2,12 @@ package first.tutorial.expense_tracker.database;
 
 public class Expense {
     private int id;
+    private int userId; // 🌟 NEW
     private String title;
     private double amount;
     private String category;
     private String date;
-    private int isRecurring; // 0 for false, 1 for true
-
-    public Expense() {
-    }
+    private int isRecurring;
 
     public Expense(String title, double amount, String category, String date, int isRecurring) {
         this.title = title;
@@ -19,8 +17,20 @@ public class Expense {
         this.isRecurring = isRecurring;
     }
 
+    public Expense(int id, String title, double amount, String category, String date, int isRecurring) {
+        this.id = id;
+        this.title = title;
+        this.amount = amount;
+        this.category = category;
+        this.date = date;
+        this.isRecurring = isRecurring;
+    }
+
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
+
+    public int getUserId() { return userId; }
+    public void setUserId(int userId) { this.userId = userId; }
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
